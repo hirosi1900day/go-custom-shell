@@ -12,7 +12,11 @@ func main() {
 	reader := bufio.NewReader(os.Stdin)
 	for {
 		fmt.Print("> ")
-		input, _ := reader.ReadString('\n')
+		input, err := reader.ReadString('\n')
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "Error reading command:", err)
+			continue
+		}
 		input = strings.TrimSpace(input)
 
 		if input == "exit" {
@@ -22,9 +26,9 @@ func main() {
 		cmd := exec.Command("sh", "-c", input)
 		cmd.Stderr = os.Stderr
 		cmd.Stdout = os.Stdout
-		err := cmd.Run()
+		err = cmd.Run()
 		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
+			fmt.Fprintln(os.Stderr, "Command execution failed:", err)
 		}
 	}
 }
